@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Pustu</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .header h1, .header h2, .header h3, .header h4 {
+      margin: 5px 0;
+    }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .logout-btn {
+      background-color: #f44336;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Halaman Login -->
+  <div class="container" id="loginContainer">
+    <h1>Login Pustu</h1>
+    <form id="loginForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" placeholder="Masukkan username" required>
+      
+      <label for="password">Password:</label>
+      <input type="password" id="password" placeholder="Masukkan password" required>
+      
+      <button type="button" onclick="login()">Login</button>
+    </form>
+  </div>
+
+  <!-- Halaman Laporan -->
+  <div class="container" id="reportContainer" style="display: none;">
+    <div class="header">
+      <h1>UPTD PUSKESMAS PETANG I</h1>
+      <h2 id="reportTitle">LAPORAN ANAK DAN BALITA</h2>
+      <h3>PROGRAMER: IDA AYU PUTU DIAH JAYADI</h3>
+      <h4 id="currentPustuName"></h4>
+    </div>
+    <button onclick="pilihLaporan('anak_balita')">Laporan Anak dan Balita</button>
+    <button onclick="pilihLaporan('resti')">Laporan Resti</button>
+    <button onclick="pilihLaporan('bblr')">Laporan BBLR</button>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    // Data username, password, nama, dan link laporan untuk masing-masing Pustu
+    const users = {
+      sulangai1: { 
+        password: "sulangai1", 
+        nama: "Pustu Sulangai 1", 
+        laporan: {
+          anak_balita: "https://docs.google.com/spreadsheets/d/1LvyRUXLhF54KUhA7dUZewxaKMoTeDURg/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          resti: "https://docs.google.com/document/d/1UyKFNB3d7t6L4UDGNLwVjzvhLt6vOvwc/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          bblr: "https://docs.google.com/spreadsheets/d/1AdjImRabiJM_7-MEtI36ZIy_mMn-KHTS/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true"
+        }
+      },
+      sulangai2: { 
+        password: "sulangai2", 
+        nama: "Pustu Sulangai 2", 
+        laporan: {
+          anak_balita: "https://docs.google.com/spreadsheets/d/1BH4a4GGUZQgW03D6PZWT6z9nCg_sGsFZ/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          resti: "https://docs.google.com/document/d/1sG491FM6S9_6QgFKl28WGMvx2nQWCEle/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          bblr: "https://docs.google.com/spreadsheets/d/15xSBLgY8ZWVGVeb29XOBPoadDrH3YEre/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true"
+        }
+      },
+      pangsan: { 
+        password: "pangsan", 
+        nama: "Pustu Pangsan", 
+        laporan: {
+          anak_balita: "https://docs.google.com/spreadsheets/d/1ne6PSiIAfcPVmny5rPJLZeSFGwt5ydX7/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          resti: "https://docs.google.com/document/d/1S4kZVwgyoUiWOH7W3EvvZ90WQyG0GBFj/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          bblr: "https://docs.google.com/spreadsheets/d/1wZaF7cXZpEmE0BDSEB1fHZ1rywr5SM-G/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true"
+        }
+      },
+      getasan: { 
+        password: "getasan", 
+        nama: "Pustu Getasan", 
+        laporan: {
+          anak_balita: "https://docs.google.com/spreadsheets/d/1CO3ToaMMjH_M65xK0OkItDUrajWEhtVh/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          resti: "https://docs.google.com/document/d/1cBLDj4shkMwFTeiyHpSO7pL7xaXty55E/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          bblr: "https://docs.google.com/spreadsheets/d/16hBTLdByKUjZ1P5FYtu3BBYKCROBd4ws/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true"
+        }
+      },
+      carangsari: { 
+        password: "carangsari", 
+        nama: "Pustu Carangsari", 
+        laporan: {
+          anak_balita: "https://docs.google.com/spreadsheets/d/1n3iI2S2t8Ep6Hp9k8WzqI07F4SX1MFhw/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          resti: "https://docs.google.com/document/d/1drhDWx0lJ9e_vfh5h0okaPO0H0ifAvHN/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true",
+          bblr: "https://docs.google.com/spreadsheets/d/1BWnl23TK1jy04tYqs2PXlvLoDuZQ6PKb/edit?usp=sharing&ouid=110993906804188379911&rtpof=true&sd=true"
+        }
+      }
+    };
+
+    let currentPustu = null;
+
+    // Fungsi login
+    function login() {
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      if (users[username] && users[username].password === password) {
+        currentPustu = username;
+        document.getElementById('loginContainer').style.display = 'none';
+        document.getElementById('reportContainer').style.display = 'block';
+
+        const pustuName = users[username].nama;
+        document.getElementById('currentPustuName').textContent = `Pustu: ${pustuName}`;
+      } else {
+        alert('Username atau password salah!');
+      }
+    }
+
+    // Fungsi logout
+    function logout() {
+      currentPustu = null;
+      document.getElementById('loginContainer').style.display = 'block';
+      document.getElementById('reportContainer').style.display = 'none';
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+    }
+
+    // Fungsi memilih laporan
+    function pilihLaporan(jenisLaporan) {
+      if (currentPustu && users[currentPustu].laporan[jenisLaporan]) {
+        const link = users[currentPustu].laporan[jenisLaporan];
+        const reportTitle = document.getElementById('reportTitle');
+        reportTitle.textContent = `LAPORAN ${jenisLaporan.toUpperCase().replace('_', ' ')}`;
+        window.open(link, '_blank');
+      } else {
+        alert('Laporan tidak ditemukan!');
+      }
+    }
+  </script>
+</body>
+</html>
+
+
+
+
+
+
